@@ -141,7 +141,6 @@ export default function Home() {
             <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-8 backdrop-blur-sm bg-white/90">
                 <div className="flex flex-col md:flex-row gap-6">
                     <div className="flex-1 relative group">
-                        <div className="absolute inset-0 bg-gradient-to-r from-red-500 to-orange-500 rounded-xl opacity-0 group-hover:opacity-10 transition-opacity duration-300"></div>
                         <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5 z-10" />
                         <input
                             type="text"
@@ -176,12 +175,12 @@ export default function Home() {
                         <h2 className="text-3xl font-bold text-gray-900">
                             Kapitel
                         </h2>
-                        <div className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-red-500 to-orange-500 rounded-full shadow-lg">
-                            <span className="text-white font-bold text-lg">
+                        <div className="flex items-center gap-2 px-4 py-2 bg-gray-100 border border-gray-200 rounded-full shadow-sm">
+                            <span className="text-gray-800 font-bold text-lg">
                                 {filteredChapters.length}
                             </span>
                             {filteredChapters.length !== availableChapters.length && (
-                                <span className="text-white/80 text-sm">
+                                <span className="text-gray-600 text-sm">
                                     von {availableChapters.length}
                                 </span>
                             )}
