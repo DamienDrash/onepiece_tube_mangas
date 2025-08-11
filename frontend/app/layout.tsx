@@ -10,8 +10,8 @@ export const metadata: Metadata = {
     title: 'One Piece Offline Reader',
     description: 'Offline-fähiger One Piece Manga Reader',
     icons: {
-        icon: '/onepiece-logo.png',
-        shortcut: '/onepiece-logo.png',
+        icon: '/favicon.ico',
+        shortcut: '/favicon.ico',
         apple: '/onepiece-logo.png',
     },
 }
