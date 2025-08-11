@@ -20,3 +20,7 @@ email-validator==2.1.1
 # Web Push Notifications
 pywebpush==1.14.0
 cryptography==41.0.7
+
+# Additional export formats
+Pillow==10.0.1
+reportlab==4.0.4

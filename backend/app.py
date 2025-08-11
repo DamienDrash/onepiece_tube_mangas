@@ -125,6 +125,12 @@ def health_check():
     return {"status": "healthy", "service": "onepiece-offline-api"}
 
 
+@app.get("/api/health")
+def api_health_check():
+    """API Health check endpoint for frontend."""
+    return {"status": "healthy", "service": "onepiece-offline-api"}
+
+
 @app.get("/api/chapters", response_model=List[Dict[str, Any]])
 def list_chapters() -> List[Dict[str, Any]]:
     """Return a list of downloaded chapters.
@@ -317,6 +323,146 @@ def get_push_stats():
         "subscribers": web_push_service.get_subscription_count(),
         "service_active": True
     }
+
+
+@app.delete("/api/chapters/{chapter_number}")
+def delete_chapter(chapter_number: int):
+    """Delete downloaded chapter files.
+    
+    Parameters
+    ----------
+    chapter_number : int
+        Chapter number to delete
+        
+    Returns
+    -------
+    dict
+        Deletion status
+    """
+    try:
+        chapter_dir = Path(STORAGE_DIR) / str(chapter_number)
+        if not chapter_dir.exists():
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail=f"Chapter {chapter_number} not found"
+            )
+        
+        # Delete all files in chapter directory
+        import shutil
+        shutil.rmtree(chapter_dir)
+        
+        return {
+            "status": "deleted",
+            "chapter": chapter_number,
+            "message": f"Chapter {chapter_number} deleted successfully"
+        }
+    except Exception as exc:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to delete chapter: {str(exc)}"
+        ) from exc
+
+
+@app.get("/api/chapters/{chapter_number}/pdf")
+def download_pdf(chapter_number: int):
+    """Download PDF file for a specific chapter."""
+    try:
+        pdf_path = Path(STORAGE_DIR) / str(chapter_number) / f"onepiece_{chapter_number}.pdf"
+        if not pdf_path.exists():
+            # Generate PDF if it doesn't exist
+            from downloader import ChapterDownloader
+            downloader = ChapterDownloader(STORAGE_DIR)
+            downloader._create_pdf_from_images(chapter_number)
+            
+        if not pdf_path.exists():
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail=f"PDF file for chapter {chapter_number} not found"
+            )
+        
+        return FileResponse(
+            path=str(pdf_path),
+            filename=f"onepiece_chapter_{chapter_number}.pdf",
+            media_type="application/pdf"
+        )
+    except Exception as exc:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to download PDF: {str(exc)}"
+        ) from exc
+
+
+@app.get("/api/chapters/{chapter_number}/cbz")
+def download_cbz(chapter_number: int):
+    """Download CBZ file for a specific chapter."""
+    try:
+        cbz_path = Path(STORAGE_DIR) / str(chapter_number) / f"onepiece_{chapter_number}.cbz"
+        if not cbz_path.exists():
+            # Generate CBZ if it doesn't exist
+            from downloader import ChapterDownloader
+            downloader = ChapterDownloader(STORAGE_DIR)
+            downloader._create_cbz_from_images(chapter_number)
+            
+        if not cbz_path.exists():
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail=f"CBZ file for chapter {chapter_number} not found"
+            )
+        
+        return FileResponse(
+            path=str(cbz_path),
+            filename=f"onepiece_chapter_{chapter_number}.cbz",
+            media_type="application/zip"
+        )
+    except Exception as exc:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to download CBZ: {str(exc)}"
+        ) from exc
+
+
+@app.post("/api/chapters/delete-multiple")
+def delete_multiple_chapters(chapter_numbers: List[int]):
+    """Delete multiple downloaded chapters.
+    
+    Parameters
+    ----------
+    chapter_numbers : List[int]
+        List of chapter numbers to delete
+        
+    Returns
+    -------
+    dict
+        Deletion status with details
+    """
+    try:
+        deleted = []
+        failed = []
+        
+        for chapter_number in chapter_numbers:
+            try:
+                chapter_dir = Path(STORAGE_DIR) / str(chapter_number)
+                if chapter_dir.exists():
+                    import shutil
+                    shutil.rmtree(chapter_dir)
+                    deleted.append(chapter_number)
+                else:
+                    failed.append({"chapter": chapter_number, "reason": "not found"})
+            except Exception as e:
+                failed.append({"chapter": chapter_number, "reason": str(e)})
+        
+        return {
+            "status": "completed",
+            "deleted": deleted,
+            "failed": failed,
+            "total_requested": len(chapter_numbers),
+            "total_deleted": len(deleted)
+        }
+    except Exception as exc:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to delete chapters: {str(exc)}"
+        ) from exc
 
 
 if __name__ == "__main__":

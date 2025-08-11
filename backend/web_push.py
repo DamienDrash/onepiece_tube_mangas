@@ -196,7 +196,8 @@ class WebPushService:
                     vapid_private_key=self.vapid_private_key,
                     vapid_claims={
                         "sub": "mailto:noreply@onepiece-offline.local"
-                    }
+                    },
+                    timeout=30
                 )
                 successful_sends += 1
                 logger.debug("Push notification sent to %s", subscription['endpoint'][:50])

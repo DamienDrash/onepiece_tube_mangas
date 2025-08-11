@@ -10,12 +10,13 @@ export default function Navigation() {
     const [isOpen, setIsOpen] = useState(false)
 
     // Health check to show connection status
-    const { data: healthData, isError } = useQuery(
+    const { data: healthData, isError, isLoading: healthLoading } = useQuery(
         'health-check',
         apiService.healthCheck,
         {
-            refetchInterval: 60000, // Check every minute
-            retry: false,
+            refetchInterval: 30000, // Check every 30 seconds
+            retry: 2,
+            retryDelay: 1000,
         }
     )
 
@@ -53,11 +54,14 @@ export default function Navigation() {
                         {/* Connection Status */}
                         <div className="flex items-center space-x-2">
                             <div
-                                className={`w-2 h-2 rounded-full ${isError ? 'bg-red-500' : 'bg-green-500'
-                                    }`}
+                                className={`w-2 h-2 rounded-full ${
+                                    healthLoading ? 'bg-yellow-500' : 
+                                    isError ? 'bg-red-500' : 'bg-green-500'
+                                }`}
                             />
                             <span className="text-sm text-gray-500">
-                                {isError ? 'Offline' : 'Online'}
+                                {healthLoading ? 'Verbinde...' : 
+                                 isError ? 'Offline' : 'Online'}
                             </span>
                         </div>
                     </div>
