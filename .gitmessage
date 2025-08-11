@@ -1,0 +1,24 @@
+# ⚡️ Type: Brief description (max 50 chars)
+#
+# Explain what and why vs. how
+# Use the imperative mood: "Add feature" not "Added feature"
+# Capitalize the subject line
+# Do not end the subject line with a period
+# 
+# Types:
+# ✨ feat: New feature
+# 🐛 fix: Bug fix
+# 📚 docs: Documentation changes
+# 🎨 style: Code style changes (formatting, missing semicolons, etc.)
+# ♻️ refactor: Code refactoring
+# ⚡️ perf: Performance improvements
+# ✅ test: Adding or updating tests
+# 🔧 chore: Build process or auxiliary tool changes
+# 🔥 remove: Remove code or files
+# 🚀 deploy: Deployment related changes
+#
+# Examples:
+# ✨ feat: Add web push notifications
+# 🐛 fix: Resolve chapter download timeout issue
+# 📚 docs: Update README with push notification setup
+# ♻️ refactor: Extract EPUB generation to separate module
