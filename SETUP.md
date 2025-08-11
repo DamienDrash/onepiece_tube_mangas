@@ -28,7 +28,7 @@ lsof -i :3001
 ```bash
 # Repository in gewünschtes Verzeichnis klonen
 cd ~/Documents
-git clone <repository-url> onepiece_tube_manga
+git clone https://github.com/DamienDrash/onepiece_tube_mangas.git onepiece_tube_manga
 cd onepiece_tube_manga
 ```
 

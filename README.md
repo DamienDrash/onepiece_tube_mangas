@@ -1,6 +1,6 @@
 # 🏴‍☠️ One Piece Offline Reader
 
-Eine moderne Web-Anwendung zum Herunterladen und offline Verfügbarmachen von One Piece Manga-Kapiteln. Die App lädt Kapitel von OnePiece-Tube herunter, konvertiert sie in EPUB-Format und bietet eine benutzerfreundliche Oberfläche zum Verwalten der Sammlung.
+Eine moderne Web-Anwendung zum Herunterladen und offline Verfügbarmachen von One Piece Manga-Kapiteln. Die App lädt Kapitel von OnePiece-Tube herunter, konvertiert sie in verschiedene Formate (EPUB, PDF, CBZ) und bietet eine benutzerfreundliche Oberfläche zum Verwalten der Sammlung.
 
 [![GitHub Repository](https://img.shields.io/badge/GitHub-onepiece__tube__mangas-blue?style=for-the-badge&logo=github)](https://github.com/DamienDrash/onepiece_tube_mangas)
 [![Docker Support](https://img.shields.io/badge/Docker-Supported-blue?style=for-the-badge&logo=docker)](https://docker.com)
@@ -11,7 +11,8 @@ Eine moderne Web-Anwendung zum Herunterladen und offline Verfügbarmachen von On
 
 ### 🎯 Hauptfunktionen
 - **Automatischer Download**: Lädt One Piece Kapitel direkt von OnePiece-Tube
-- **EPUB-Konvertierung**: Konvertiert Kapitel automatisch in standardkonforme EPUB-Dateien
+- **Multi-Format-Export**: Konvertiert Kapitel automatisch in EPUB, PDF und CBZ-Formate
+- **Bulk-Operationen**: Massendownload und -löschung von Kapiteln
 - **Offline-Lesbarkeit**: Alle Downloads funktionieren komplett offline
 - **Moderne UI**: Responsive Web-Interface mit Next.js und Tailwind CSS
 - **REST API**: Vollständige API für alle Funktionen
@@ -30,7 +31,11 @@ Eine moderne Web-Anwendung zum Herunterladen und offline Verfügbarmachen von On
 - **Dashboard**: Übersicht über verfügbare und heruntergeladene Kapitel
 - **Suchfunktion**: Kapitel nach Nummer oder Titel durchsuchen
 - **Filter**: Nach Status (alle/heruntergeladen/verfügbar) filtern
-- **Download-Verwaltung**: Übersicht und Verwaltung aller EPUB-Dateien
+- **Download-Verwaltung**: 
+  - Übersicht aller heruntergeladenen Kapitel
+  - Individual- und Bulk-Download in EPUB, PDF, CBZ
+  - Einzelne oder mehrere Kapitel löschen
+  - ZIP-Download für Massenexport
 - **Erweiterte Einstellungen**: 
   - E-Mail-Benachrichtigungen (SMTP-Konfiguration)
   - Web-Push-Benachrichtigungen (Browser-nativ)
@@ -260,7 +265,18 @@ docker compose build --no-cache
 2. Durchsuche verfügbare Kapitel im Dashboard
 3. Klicke "Herunterladen" für gewünschte Kapitel
 4. Warte auf Download-Abschluss
-5. EPUB-Datei über "EPUB öffnen" Button herunterladen
+5. Gehe zu Downloads-Seite für Dateien-Verwaltung
+
+### Download-Verwaltung
+1. Gehe zur **Downloads-Seite** (`/downloads`)
+2. Alle heruntergeladenen Kapitel werden angezeigt
+3. **Einzelne Downloads**:
+   - EPUB, PDF oder CBZ direkt herunterladen
+   - Kapitel einzeln löschen
+4. **Bulk-Operationen**:
+   - Mehrere Kapitel auswählen
+   - Massendownload als ZIP-Archiv
+   - Mehrere Kapitel gleichzeitig löschen
 
 ### Benachrichtigungen einrichten
 
@@ -283,10 +299,21 @@ docker compose build --no-cache
 4. Optional: Test-Benachrichtigung senden
 5. Automatische Benachrichtigungen bei neuen Kapiteln
 
-### EPUB-Dateien verwenden
+### Datei-Formate verwenden
+#### EPUB (E-Books)
 - **Desktop**: Calibre, Adobe Digital Editions
 - **Mobile**: Apple Books (iOS), Google Play Books (Android)
 - **E-Reader**: Kindle (nach Konvertierung), Kobo, Tolino
+
+#### PDF (Portable Document Format)
+- **Universal**: Alle PDF-Reader (Adobe Reader, Browser, etc.)
+- **Drucken**: Optimiert für Ausdrucke
+- **Mobile**: Gut für Tablets und größere Bildschirme
+
+#### CBZ (Comic Book Archive)
+- **Comic-Reader**: ComicRack, CDisplayEx, Perfect Viewer
+- **Mobile**: Comic-Apps wie Tachiyomi, ComicScreen
+- **Einfach**: ZIP-Archiv mit Bildern, einfach zu handhaben
 
 ## ⚠️ Wichtige Hinweise
 
