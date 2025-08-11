@@ -83,11 +83,7 @@ export default function Home() {
                             />
                         </div>
                     </div>
-                    <h1 className="text-4xl md:text-6xl font-extrabold mb-6">
-                        <span className="gradient-pirate bg-clip-text text-transparent drop-shadow-lg">
-                            Offline Reader
-                        </span>
-                    </h1>
+
                     <p className="text-xl md:text-2xl text-gray-700 max-w-3xl mx-auto leading-relaxed font-medium">
                         Deine liebsten <span className="text-red-600 font-bold">One Piece</span> Kapitel offline verfügbar machen.
                         <br className="hidden md:block" />
