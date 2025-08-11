@@ -2,7 +2,10 @@
 
 Eine moderne Web-Anwendung zum Herunterladen und offline Verfügbarmachen von One Piece Manga-Kapiteln. Die App lädt Kapitel von OnePiece-Tube herunter, konvertiert sie in EPUB-Format und bietet eine benutzerfreundliche Oberfläche zum Verwalten der Sammlung.
 
-![One Piece Offline Reader](https://img.shields.io/badge/One%20Piece-Offline%20Reader-red?style=for-the-badge&logo=github)
+[![GitHub Repository](https://img.shields.io/badge/GitHub-onepiece__tube__mangas-blue?style=for-the-badge&logo=github)](https://github.com/DamienDrash/onepiece_tube_mangas)
+[![Docker Support](https://img.shields.io/badge/Docker-Supported-blue?style=for-the-badge&logo=docker)](https://docker.com)
+[![FastAPI](https://img.shields.io/badge/FastAPI-Backend-green?style=for-the-badge&logo=fastapi)](https://fastapi.tiangolo.com)
+[![Next.js](https://img.shields.io/badge/Next.js-Frontend-black?style=for-the-badge&logo=next.js)](https://nextjs.org)
 
 ## ✨ Features
 
@@ -45,8 +48,8 @@ Eine moderne Web-Anwendung zum Herunterladen und offline Verfügbarmachen von On
 
 1. **Repository klonen**
    ```bash
-   git clone <repository-url>
-   cd onepiece_tube_manga
+   git clone https://github.com/DamienDrash/onepiece_tube_mangas.git
+   cd onepiece_tube_mangas
    ```
 
 2. **Environment konfigurieren**

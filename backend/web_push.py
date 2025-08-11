@@ -69,9 +69,29 @@ class WebPushService:
         Returns
         -------
         str
-            VAPID public key in PEM format
+            VAPID public key in URL-safe base64 format for browser use
         """
-        return self.vapid_public_key
+        try:
+            # Parse PEM key to extract raw bytes
+            from cryptography.hazmat.primitives import serialization
+            public_key_obj = serialization.load_pem_public_key(
+                self.vapid_public_key.encode('utf-8')
+            )
+            
+            # Get raw public key bytes in uncompressed format
+            raw_key = public_key_obj.public_bytes(
+                encoding=serialization.Encoding.X962,
+                format=serialization.PublicFormat.UncompressedPoint
+            )
+            
+            # Convert to URL-safe base64
+            import base64
+            return base64.urlsafe_b64encode(raw_key).decode('utf-8').rstrip('=')
+            
+        except Exception as e:
+            logger.error("Failed to convert VAPID key: %s", str(e))
+            # Fallback to PEM format
+            return self.vapid_public_key
 
     def subscribe(self, subscription: Dict) -> bool:
         """Add a new push subscription.
