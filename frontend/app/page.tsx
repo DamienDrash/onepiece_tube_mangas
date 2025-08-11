@@ -84,12 +84,7 @@ export default function Home() {
                                 className="h-32 md:h-40 object-contain drop-shadow-lg"
                             />
                         </div>
-                        <div className="relative">
-                            <div className="absolute inset-0 bg-gradient-to-r from-red-500 via-orange-500 to-blue-500 rounded-full blur-lg opacity-30 scale-110"></div>
-                            <div className="relative inline-flex items-center justify-center w-20 h-20 rounded-full gradient-pirate shadow-2xl transform hover:rotate-12 transition-transform duration-300">
-                                <Book className="w-10 h-10 text-white" />
-                            </div>
-                        </div>
+
                     </div>
                     <h1 className="text-4xl md:text-6xl font-extrabold mb-6">
                         <span className="gradient-pirate bg-clip-text text-transparent drop-shadow-lg">
@@ -100,7 +95,7 @@ export default function Home() {
                         Deine liebsten <span className="text-red-600 font-bold">One Piece</span> Kapitel offline verfügbar machen.
                         <br className="hidden md:block" />
                         <span className="text-orange-600">Automatischer Download</span> neuer Kapitel und 
-                        <span className="text-blue-600"> EPUB-Export</span> für alle Geräte.
+                        <span className="text-blue-600">Export</span> in verschiedenen Formaten (EPUB, PDF, CBZ).
                     </p>
                 </div>
             </div>
@@ -154,7 +149,7 @@ export default function Home() {
                         <input
                             type="text"
                             placeholder="Kapitel suchen... (z.B. 'Wano', 'Gear 5', '1156')"
-                            className="relative w-full pl-12 pr-4 py-4 border border-gray-200 rounded-xl focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-all duration-300 text-lg placeholder-gray-400 bg-gray-50 focus:bg-white shadow-inner"
+                            className="relative w-full pl-12 pr-4 py-4 border border-gray-200 rounded-xl focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-all duration-300 text-lg text-gray-900 placeholder-gray-400 bg-gray-50 focus:bg-white shadow-inner"
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
                         />
@@ -165,7 +160,7 @@ export default function Home() {
                             <span className="font-medium">Filter:</span>
                         </div>
                         <select
-                            className="px-6 py-4 border border-gray-200 rounded-xl focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-all duration-300 text-lg bg-gray-50 focus:bg-white shadow-inner font-medium"
+                            className="px-6 py-4 border border-gray-200 rounded-xl focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-all duration-300 text-lg text-gray-900 bg-gray-50 focus:bg-white shadow-inner font-medium"
                             value={filterDownloaded}
                             onChange={(e) => setFilterDownloaded(e.target.value as any)}
                         >

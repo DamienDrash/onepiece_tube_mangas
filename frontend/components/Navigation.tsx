@@ -27,11 +27,11 @@ export default function Navigation() {
     ]
 
     return (
-        <nav className="bg-white shadow-sm border-b border-gray-200">
+        <nav className="bg-white shadow-sm border-b border-gray-200 relative z-50">
             <div className="container mx-auto px-4">
                 <div className="flex justify-between items-center h-16">
                     {/* Logo */}
-                    <Link href="/" className="flex items-center space-x-3">
+                    <Link href="/" className="flex items-center space-x-3 relative z-10 cursor-pointer hover:opacity-80 transition-opacity duration-200">
                         <div className="w-10 h-10 flex items-center justify-center">
                             <img 
                                 src="/onepiece-logo.png" 
@@ -48,10 +48,10 @@ export default function Navigation() {
                             <Link
                                 key={item.href}
                                 href={item.href}
-                                className="flex items-center space-x-2 text-gray-600 hover:text-red-600 transition-colors duration-200"
+                                className="flex items-center space-x-2 px-4 py-2 text-gray-600 hover:text-red-600 hover:bg-gray-50 rounded-lg transition-all duration-200 relative z-10 cursor-pointer"
                             >
                                 <item.icon className="w-4 h-4" />
-                                <span>{item.label}</span>
+                                <span className="font-medium">{item.label}</span>
                             </Link>
                         ))}
 
@@ -88,10 +88,10 @@ export default function Navigation() {
                                     key={item.href}
                                     href={item.href}
                                     onClick={() => setIsOpen(false)}
-                                    className="flex items-center space-x-2 px-4 py-2 text-gray-600 hover:text-red-600 hover:bg-gray-50 rounded-lg transition-colors duration-200"
+                                    className="flex items-center space-x-2 px-4 py-3 text-gray-600 hover:text-red-600 hover:bg-gray-50 rounded-lg transition-all duration-200 cursor-pointer relative z-10"
                                 >
-                                    <item.icon className="w-4 h-4" />
-                                    <span>{item.label}</span>
+                                    <item.icon className="w-5 h-5" />
+                                    <span className="font-medium text-base">{item.label}</span>
                                 </Link>
                             ))}
 
