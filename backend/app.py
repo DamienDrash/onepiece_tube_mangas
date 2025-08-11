@@ -340,7 +340,7 @@ def delete_chapter(chapter_number: int):
         Deletion status
     """
     try:
-        chapter_dir = Path(STORAGE_DIR) / str(chapter_number)
+        chapter_dir = Path(DEFAULT_STORAGE_DIR) / str(chapter_number)
         if not chapter_dir.exists():
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
@@ -367,12 +367,12 @@ def delete_chapter(chapter_number: int):
 def download_pdf(chapter_number: int):
     """Download PDF file for a specific chapter."""
     try:
-        pdf_path = Path(STORAGE_DIR) / str(chapter_number) / f"onepiece_{chapter_number}.pdf"
+        pdf_path = Path(DEFAULT_STORAGE_DIR) / str(chapter_number) / f"onepiece_{chapter_number}.pdf"
         if not pdf_path.exists():
             # Generate PDF if it doesn't exist
             from downloader import ChapterDownloader
-            downloader = ChapterDownloader(STORAGE_DIR)
-            downloader._create_pdf_from_images(chapter_number)
+            downloader = ChapterDownloader(DEFAULT_STORAGE_DIR)
+            downloader.create_pdf_from_images(chapter_number)
             
         if not pdf_path.exists():
             raise HTTPException(
@@ -396,12 +396,12 @@ def download_pdf(chapter_number: int):
 def download_cbz(chapter_number: int):
     """Download CBZ file for a specific chapter."""
     try:
-        cbz_path = Path(STORAGE_DIR) / str(chapter_number) / f"onepiece_{chapter_number}.cbz"
+        cbz_path = Path(DEFAULT_STORAGE_DIR) / str(chapter_number) / f"onepiece_{chapter_number}.cbz"
         if not cbz_path.exists():
             # Generate CBZ if it doesn't exist
             from downloader import ChapterDownloader
-            downloader = ChapterDownloader(STORAGE_DIR)
-            downloader._create_cbz_from_images(chapter_number)
+            downloader = ChapterDownloader(DEFAULT_STORAGE_DIR)
+            downloader.create_cbz_from_images(chapter_number)
             
         if not cbz_path.exists():
             raise HTTPException(
@@ -441,7 +441,7 @@ def delete_multiple_chapters(chapter_numbers: List[int]):
         
         for chapter_number in chapter_numbers:
             try:
-                chapter_dir = Path(STORAGE_DIR) / str(chapter_number)
+                chapter_dir = Path(DEFAULT_STORAGE_DIR) / str(chapter_number)
                 if chapter_dir.exists():
                     import shutil
                     shutil.rmtree(chapter_dir)
@@ -462,6 +462,101 @@ def delete_multiple_chapters(chapter_numbers: List[int]):
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Failed to delete chapters: {str(exc)}"
+        ) from exc
+
+
+@app.post("/api/chapters/bulk-download")
+def bulk_download_chapters(chapter_numbers: List[int]):
+    """Download multiple chapters in bulk."""
+    try:
+        downloader = ChapterDownloader(DEFAULT_STORAGE_DIR)
+        results = {
+            "status": "completed",
+            "downloaded": [],
+            "failed": [],
+            "total_requested": len(chapter_numbers),
+            "total_downloaded": 0
+        }
+        
+        for chapter_number in chapter_numbers:
+            try:
+                epub_path = downloader.download_chapter(chapter_number)
+                results["downloaded"].append({
+                    "chapter": chapter_number,
+                    "epub": str(epub_path.relative_to(Path(DEFAULT_STORAGE_DIR))),
+                    "status": "downloaded"
+                })
+            except Exception as e:
+                results["failed"].append({
+                    "chapter": chapter_number,
+                    "reason": str(e)
+                })
+        
+        results["total_downloaded"] = len(results["downloaded"])
+        return results
+        
+    except Exception as exc:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to bulk download chapters: {str(exc)}"
+        ) from exc
+
+
+@app.post("/api/chapters/bulk-download-zip")
+def bulk_download_zip(chapter_numbers: List[int], format: str = "epub"):
+    """Create a ZIP file with multiple chapters in the specified format."""
+    try:
+        import zipfile
+        import tempfile
+        from datetime import datetime
+        
+        if format not in ["epub", "pdf", "cbz"]:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Format must be one of: epub, pdf, cbz"
+            )
+        
+        # Create temporary ZIP file
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        zip_filename = f"onepiece_chapters_{timestamp}.zip"
+        temp_dir = Path(tempfile.gettempdir())
+        zip_path = temp_dir / zip_filename
+        
+        with zipfile.ZipFile(zip_path, 'w', zipfile.ZIP_DEFLATED) as zip_file:
+            downloader = ChapterDownloader(DEFAULT_STORAGE_DIR)
+            
+            for chapter_number in chapter_numbers:
+                try:
+                    chapter_dir = Path(DEFAULT_STORAGE_DIR) / str(chapter_number)
+                    file_path = chapter_dir / f"onepiece_{chapter_number}.{format}"
+                    
+                    # Generate file if it doesn't exist
+                    if not file_path.exists():
+                        if format == "epub":
+                            downloader.download_chapter(chapter_number)
+                        elif format == "pdf":
+                            downloader.create_pdf_from_images(chapter_number)
+                        elif format == "cbz":
+                            downloader.create_cbz_from_images(chapter_number)
+                    
+                    # Add to ZIP if file exists
+                    if file_path.exists():
+                        zip_file.write(file_path, f"onepiece_chapter_{chapter_number}.{format}")
+                        
+                except Exception as e:
+                    logger.warning("Failed to add chapter %d to ZIP: %s", chapter_number, e)
+                    continue
+        
+        return FileResponse(
+            path=str(zip_path),
+            filename=zip_filename,
+            media_type="application/zip"
+        )
+        
+    except Exception as exc:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to create bulk download ZIP: {str(exc)}"
         ) from exc
 
 

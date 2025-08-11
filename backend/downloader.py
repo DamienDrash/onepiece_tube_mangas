@@ -246,6 +246,138 @@ class ChapterDownloader:
         epub.write_epub(str(output_path), book)
         logger.info("EPUB created at %s with %d separate pages", output_path, len(image_files))
 
+    def _create_pdf(
+        self,
+        chapter: int,
+        title: str,
+        image_files: List[Path],
+        output_path: Path,
+    ) -> None:
+        """Create a PDF from the downloaded images."""
+        try:
+            from reportlab.pdfgen import canvas
+            from reportlab.lib.pagesizes import A4
+            from PIL import Image
+            
+            c = canvas.Canvas(str(output_path), pagesize=A4)
+            page_width, page_height = A4
+            
+            # Add title page
+            c.setTitle(f"One Piece - Kapitel {chapter}: {title}")
+            c.setFont("Helvetica-Bold", 24)
+            c.drawString(50, page_height - 100, f"One Piece")
+            c.setFont("Helvetica", 18)
+            c.drawString(50, page_height - 150, f"Kapitel {chapter}: {title}")
+            c.setFont("Helvetica", 12)
+            c.drawString(50, page_height - 200, f"© Eiichiro Oda")
+            c.showPage()
+            
+            # Add each image as a page
+            for img_path in image_files:
+                try:
+                    with Image.open(img_path) as img:
+                        # Convert to RGB if necessary
+                        if img.mode != 'RGB':
+                            img = img.convert('RGB')
+                        
+                        # Calculate scaling to fit page while maintaining aspect ratio
+                        img_width, img_height = img.size
+                        scale_x = (page_width - 40) / img_width
+                        scale_y = (page_height - 40) / img_height
+                        scale = min(scale_x, scale_y)
+                        
+                        new_width = img_width * scale
+                        new_height = img_height * scale
+                        
+                        # Center the image
+                        x = (page_width - new_width) / 2
+                        y = (page_height - new_height) / 2
+                        
+                        # Add image to PDF
+                        c.drawImage(str(img_path), x, y, new_width, new_height)
+                        c.showPage()
+                        
+                except Exception as e:
+                    logger.warning("Failed to add image %s to PDF: %s", img_path, e)
+                    continue
+            
+            c.save()
+            logger.info("PDF created: %s", output_path)
+            
+        except Exception as e:
+            logger.error("Failed to create PDF: %s", e)
+            raise
+
+    def _create_cbz(
+        self,
+        chapter: int,
+        title: str,
+        image_files: List[Path],
+        output_path: Path,
+    ) -> None:
+        """Create a CBZ (Comic Book ZIP) from the downloaded images."""
+        try:
+            import zipfile
+            
+            with zipfile.ZipFile(output_path, 'w', zipfile.ZIP_DEFLATED) as cbz:
+                # Add metadata file
+                metadata = f"""<?xml version="1.0"?>
+<ComicInfo xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <Title>One Piece - Kapitel {chapter}</Title>
+    <Series>One Piece</Series>
+    <Number>{chapter}</Number>
+    <Summary>{title}</Summary>
+    <Writer>Eiichiro Oda</Writer>
+    <Publisher>Shueisha</Publisher>
+    <Genre>Manga</Genre>
+    <LanguageISO>de</LanguageISO>
+    <PageCount>{len(image_files)}</PageCount>
+</ComicInfo>"""
+                cbz.writestr("ComicInfo.xml", metadata)
+                
+                # Add images with proper naming for comic readers
+                for idx, img_path in enumerate(image_files, start=1):
+                    # Use zero-padded filenames for proper sorting
+                    ext = img_path.suffix.lower()
+                    new_name = f"{idx:03d}{ext}"
+                    cbz.write(img_path, new_name)
+                    
+            logger.info("CBZ created: %s", output_path)
+            
+        except Exception as e:
+            logger.error("Failed to create CBZ: %s", e)
+            raise
+
+    def create_pdf_from_images(self, chapter: int) -> None:
+        """Generate PDF for existing chapter images."""
+        chapter_dir = self.storage_dir / str(chapter)
+        images_dir = chapter_dir / "images"
+        
+        if not images_dir.exists():
+            raise FileNotFoundError(f"Images directory not found for chapter {chapter}")
+            
+        image_files = sorted(images_dir.glob("*.*"))
+        if not image_files:
+            raise FileNotFoundError(f"No images found for chapter {chapter}")
+            
+        pdf_path = chapter_dir / f"onepiece_{chapter}.pdf"
+        self._create_pdf(chapter, f"Kapitel {chapter}", image_files, pdf_path)
+
+    def create_cbz_from_images(self, chapter: int) -> None:
+        """Generate CBZ for existing chapter images."""
+        chapter_dir = self.storage_dir / str(chapter)
+        images_dir = chapter_dir / "images"
+        
+        if not images_dir.exists():
+            raise FileNotFoundError(f"Images directory not found for chapter {chapter}")
+            
+        image_files = sorted(images_dir.glob("*.*"))
+        if not image_files:
+            raise FileNotFoundError(f"No images found for chapter {chapter}")
+            
+        cbz_path = chapter_dir / f"onepiece_{chapter}.cbz"
+        self._create_cbz(chapter, f"Kapitel {chapter}", image_files, cbz_path)
+
     def download_chapter(self, chapter: int) -> Path:
         """Download all pages of a chapter and create an EPUB.
 
