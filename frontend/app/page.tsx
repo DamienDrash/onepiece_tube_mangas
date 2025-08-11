@@ -87,8 +87,8 @@ export default function Home() {
                     <p className="text-xl md:text-2xl text-gray-700 max-w-3xl mx-auto leading-relaxed font-medium">
                         Deine liebsten <span className="text-red-600 font-bold">One Piece</span> Kapitel offline verfügbar machen.
                         <br className="hidden md:block" />
-                        <span className="text-orange-600">Automatischer Download</span> neuer Kapitel und 
-                        <span className="text-blue-600">Export</span> in verschiedenen Formaten (EPUB, PDF, CBZ).
+                        <span className="text-orange-600">Automatischer Download</span> neuer Kapitel und
+                        <span className="text-blue-600"> Export</span> in verschiedenen Formaten (EPUB, PDF, CBZ).
                     </p>
                 </div>
             </div>
