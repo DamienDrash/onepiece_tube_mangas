@@ -73,11 +73,18 @@ export default function Home() {
         <div className="space-y-8">
             {/* Hero Section */}
             <div className="text-center py-12 px-4">
-                <div className="inline-flex items-center justify-center w-20 h-20 rounded-full gradient-pirate mb-6 shadow-lg">
-                    <Book className="w-10 h-10 text-white" />
+                <div className="flex flex-col items-center mb-6">
+                    <img 
+                        src="/onepiece-title-logo.png" 
+                        alt="One Piece Logo" 
+                        className="h-24 md:h-32 object-contain mb-4"
+                    />
+                    <div className="inline-flex items-center justify-center w-16 h-16 rounded-full gradient-pirate shadow-lg">
+                        <Book className="w-8 h-8 text-white" />
+                    </div>
                 </div>
-                <h1 className="text-4xl md:text-6xl font-bold text-gray-900 mb-4">
-                    One Piece <span className="gradient-pirate bg-clip-text text-transparent">Offline</span>
+                <h1 className="text-3xl md:text-5xl font-bold text-gray-900 mb-4">
+                    <span className="gradient-pirate bg-clip-text text-transparent">Offline Reader</span>
                 </h1>
                 <p className="text-xl text-gray-600 max-w-2xl mx-auto">
                     Deine liebsten One Piece Kapitel offline verfügbar machen.

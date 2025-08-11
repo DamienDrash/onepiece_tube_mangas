@@ -32,8 +32,12 @@ export default function Navigation() {
                 <div className="flex justify-between items-center h-16">
                     {/* Logo */}
                     <Link href="/" className="flex items-center space-x-3">
-                        <div className="w-8 h-8 rounded-lg gradient-pirate flex items-center justify-center">
-                            <Book className="w-5 h-5 text-white" />
+                        <div className="w-10 h-10 flex items-center justify-center">
+                            <img 
+                                src="/onepiece-logo.png" 
+                                alt="One Piece Logo" 
+                                className="w-8 h-8 object-contain"
+                            />
                         </div>
                         <span className="text-xl font-bold text-gray-900">One Piece Offline</span>
                     </Link>
