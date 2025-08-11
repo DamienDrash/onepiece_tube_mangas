@@ -32,9 +32,10 @@ services:
     environment:
       - NODE_ENV=production
       - NEXT_PUBLIC_API_URL=http://localhost:8001
-    volumes:
-      - ./frontend:/app
-      - /app/node_modules
+    # volumes:
+      # Development: - ./frontend:/app  
+      # Development: - /app/node_modules
+      # Production: Use built image without volume mounts
     depends_on:
       - backend
     restart: unless-stopped
