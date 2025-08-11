@@ -38,7 +38,7 @@ from pathlib import Path
 from typing import List, Dict, Any, Optional
 
 from fastapi import FastAPI, HTTPException, status
-from fastapi.responses import FileResponse
+from fastapi.responses import FileResponse, Response
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from dotenv import load_dotenv
@@ -547,10 +547,20 @@ def bulk_download_zip(chapter_numbers: List[int], format: str = "epub"):
                     logger.warning("Failed to add chapter %d to ZIP: %s", chapter_number, e)
                     continue
         
-        return FileResponse(
-            path=str(zip_path),
-            filename=zip_filename,
-            media_type="application/zip"
+        # Read ZIP into memory and return as Response to avoid temp file issues
+        with open(zip_path, 'rb') as zip_file:
+            zip_content = zip_file.read()
+        
+        # Clean up temp file
+        zip_path.unlink()
+        
+        return Response(
+            content=zip_content,
+            media_type="application/zip",
+            headers={
+                "Content-Disposition": f"attachment; filename={zip_filename}",
+                "Content-Length": str(len(zip_content))
+            }
         )
         
     except Exception as exc:
