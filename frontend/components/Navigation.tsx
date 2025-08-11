@@ -43,17 +43,21 @@ export default function Navigation() {
                     </Link>
 
                     {/* Desktop Navigation */}
-                    <div className="hidden md:flex items-center space-x-8">
-                        {navItems.map((item) => (
-                            <Link
-                                key={item.href}
-                                href={item.href}
-                                className="flex items-center space-x-2 px-4 py-2 text-gray-600 hover:text-red-600 hover:bg-gray-50 rounded-lg transition-all duration-200 relative z-10 cursor-pointer"
-                            >
-                                <item.icon className="w-4 h-4" />
-                                <span className="font-medium">{item.label}</span>
-                            </Link>
-                        ))}
+                    <div className="hidden md:flex items-center space-x-4">
+                        {navItems.map((item) => {
+                            const IconComponent = item.icon;
+                            return (
+                                <Link
+                                    key={item.href}
+                                    href={item.href}
+                                    className="flex items-center space-x-2 px-3 py-2 text-gray-600 hover:text-red-600 hover:bg-gray-50 rounded-lg transition-all duration-200 font-medium"
+                                    style={{ position: 'relative', zIndex: 100 }}
+                                >
+                                    <IconComponent className="w-4 h-4" />
+                                    <span>{item.label}</span>
+                                </Link>
+                            );
+                        })}
 
                         {/* Connection Status */}
                         <div className="flex items-center space-x-2">

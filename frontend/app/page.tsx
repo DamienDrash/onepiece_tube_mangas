@@ -73,8 +73,6 @@ export default function Home() {
         <div className="space-y-8">
             {/* Hero Section */}
             <div className="text-center py-16 px-4 relative overflow-hidden">
-                {/* Background decoration */}
-                <div className="absolute inset-0 bg-gradient-to-br from-blue-50 via-orange-50 to-red-50 opacity-70 rounded-3xl"></div>
                 <div className="relative z-10">
                     <div className="flex flex-col items-center mb-8">
                         <div className="mb-6 transform hover:scale-105 transition-transform duration-300">
@@ -84,7 +82,6 @@ export default function Home() {
                                 className="h-32 md:h-40 object-contain drop-shadow-lg"
                             />
                         </div>
-
                     </div>
                     <h1 className="text-4xl md:text-6xl font-extrabold mb-6">
                         <span className="gradient-pirate bg-clip-text text-transparent drop-shadow-lg">
