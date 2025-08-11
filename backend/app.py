@@ -421,7 +421,7 @@ def download_cbz(chapter_number: int):
         ) from exc
 
 
-@app.post("/api/chapters/delete-multiple")
+@app.post("/api/bulk/chapters/delete")
 def delete_multiple_chapters(chapter_numbers: List[int]):
     """Delete multiple downloaded chapters.
     
@@ -465,7 +465,7 @@ def delete_multiple_chapters(chapter_numbers: List[int]):
         ) from exc
 
 
-@app.post("/api/chapters/bulk-download")
+@app.post("/api/bulk/chapters/download")
 def bulk_download_chapters(chapter_numbers: List[int]):
     """Download multiple chapters in bulk."""
     try:
@@ -502,7 +502,7 @@ def bulk_download_chapters(chapter_numbers: List[int]):
         ) from exc
 
 
-@app.post("/api/chapters/bulk-download-zip")
+@app.post("/api/bulk/chapters/download-zip")
 def bulk_download_zip(chapter_numbers: List[int], format: str = "epub"):
     """Create a ZIP file with multiple chapters in the specified format."""
     try:
