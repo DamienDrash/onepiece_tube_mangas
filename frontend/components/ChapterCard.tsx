@@ -48,15 +48,25 @@ export default function ChapterCard({ chapter, isDownloaded, downloadedChapter }
         }
     }
 
-    const formatDate = (dateString: string) => {
+    const formatDate = (dateString: string | null | undefined) => {
+        if (!dateString) {
+            return 'Unbekanntes Datum'
+        }
+        
         try {
-            return new Date(dateString).toLocaleDateString('de-DE', {
+            const date = new Date(dateString)
+            // Check if the date is valid
+            if (isNaN(date.getTime())) {
+                return 'Unbekanntes Datum'
+            }
+            
+            return date.toLocaleDateString('de-DE', {
                 year: 'numeric',
                 month: 'short',
                 day: 'numeric',
             })
         } catch {
-            return dateString
+            return 'Unbekanntes Datum'
         }
     }
 

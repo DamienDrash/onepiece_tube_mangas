@@ -231,10 +231,17 @@ def get_available_chapters() -> Dict[str, Any]:
         entries = notifier.entries
         chapters = []
         for entry in entries:
+            # Normalize date field - some chapters may not have publication dates
+            date_value = entry.get("date")
+            if date_value and isinstance(date_value, str) and date_value.strip():
+                formatted_date = date_value
+            else:
+                formatted_date = None
+                
             chapters.append({
                 "number": entry.get("number"),
                 "title": entry.get("name", f"Kapitel {entry.get('number')}"),
-                "date": entry.get("date"),
+                "date": formatted_date,
                 "available": entry.get("is_available", True),
                 "pages": entry.get("pages", 0)
             })
