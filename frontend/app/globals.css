@@ -2,84 +2,174 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Custom animations */
-@keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(30px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
 :root {
-    --foreground-rgb: 0, 0, 0;
-    --background-start-rgb: 214, 219, 220;
-    --background-end-rgb: 255, 255, 255;
+  --ink:    #0d0d0d;
+  --paper:  #fafaf8;
+  --panel:  #ffffff;
+  --red:    #dc2626;
+  --gold:   #f5e6c0;
 }
 
-@media (prefers-color-scheme: dark) {
-    :root {
-        --foreground-rgb: 255, 255, 255;
-        --background-start-rgb: 0, 0, 0;
-        --background-end-rgb: 0, 0, 0;
-    }
-}
+html { background: var(--paper); }
 
 body {
-    color: rgb(var(--foreground-rgb));
-    background: linear-gradient(to bottom,
-            transparent,
-            rgb(var(--background-end-rgb))) rgb(var(--background-start-rgb));
+  color: var(--ink);
+  background-color: var(--paper);
+  /* Subtle manga paper halftone grid */
+  background-image: radial-gradient(circle, rgba(0,0,0,0.028) 1px, transparent 1px);
+  background-size: 8px 8px;
+  min-height: 100dvh;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
 }
 
-/* Custom scrollbar styles */
-::-webkit-scrollbar {
-    width: 8px;
+/* ─── CORE PANEL SYSTEM ─────────────────────────────── */
+@layer components {
+
+  /* The primary manga panel container */
+  .panel {
+    @apply bg-white relative overflow-hidden;
+    border: 4px solid var(--ink);
+    box-shadow: 6px 6px 0 0 var(--ink);
+  }
+
+  .panel-red    { box-shadow: 6px 6px 0 0 var(--red); }
+  .panel-sm     { border: 3px solid var(--ink); box-shadow: 3px 3px 0 0 var(--ink); }
+  .panel-lg     { border: 5px solid var(--ink); box-shadow: 10px 10px 0 0 var(--ink); }
+  .panel-invert { @apply bg-[#0d0d0d] text-white; border: 4px solid var(--ink); box-shadow: 6px 6px 0 0 var(--red); }
+
+  .panel-hover {
+    @apply transition-all duration-150;
+  }
+  .panel-hover:hover {
+    transform: translate(-2px, -2px);
+    box-shadow: 8px 8px 0 0 var(--ink);
+  }
+
+  /* ─── HALFTONE TEXTURES ──────────────────────────── */
+  .halftone {
+    background-image: radial-gradient(circle, var(--ink) 1px, transparent 1px);
+    background-size: 6px 6px;
+  }
+  .halftone-lg {
+    background-image: radial-gradient(circle, var(--ink) 1.5px, transparent 1.5px);
+    background-size: 10px 10px;
+  }
+  .halftone-red {
+    background-image: radial-gradient(circle, var(--red) 1.5px, transparent 1.5px);
+    background-size: 8px 8px;
+  }
+  .halftone-gold {
+    background-image: radial-gradient(circle, rgba(180,140,60,0.4) 1.5px, transparent 1.5px);
+    background-size: 8px 8px;
+  }
+
+  /* ─── SPEED LINES ────────────────────────────────── */
+  .speed-lines {
+    background: repeating-conic-gradient(
+      from 0deg at 50% 140%,
+      transparent 0deg 0.7deg,
+      rgba(0,0,0,0.04) 0.7deg 1.4deg
+    );
+  }
+
+  /* ─── TYPOGRAPHY ─────────────────────────────────── */
+  .ink-headline {
+    font-family: var(--font-bangers), cursive;
+    @apply uppercase leading-none;
+    letter-spacing: 0.06em;
+  }
+
+  .ink-title {
+    font-family: var(--font-bangers), cursive;
+    @apply text-4xl md:text-6xl uppercase leading-none;
+    letter-spacing: 0.06em;
+  }
+
+  .sfx-don {
+    font-family: var(--font-noto-jp), sans-serif;
+    @apply font-black uppercase italic;
+    -webkit-text-stroke: 2px white;
+    paint-order: stroke fill;
+    filter: drop-shadow(4px 4px 0px var(--red));
+  }
+
+  .sfx {
+    font-family: var(--font-noto-jp), sans-serif;
+    @apply font-black italic;
+    -webkit-text-stroke: 1.5px var(--ink);
+    paint-order: stroke fill;
+    filter: drop-shadow(3px 3px 0px var(--red));
+  }
+
+  .japanese-sub {
+    font-family: var(--font-noto-jp), sans-serif;
+    @apply text-[10px] font-bold text-red-600 uppercase tracking-[0.3em] block mb-1;
+  }
+
+  /* ─── BADGES ─────────────────────────────────────── */
+  .arc-stamp {
+    font-family: var(--font-bangers), cursive;
+    @apply inline-block px-3 py-1 bg-[#dc2626] text-white text-[11px] tracking-[0.2em] uppercase;
+    border: 2px solid var(--ink);
+    box-shadow: 2px 2px 0 var(--ink);
+    transform: rotate(-1.5deg);
+    letter-spacing: 0.15em;
+  }
+
+  .status-badge {
+    @apply inline-flex items-center gap-1 px-2 py-0.5 text-[9px] font-black tracking-widest uppercase;
+    border: 2px solid var(--ink);
+  }
+
+  /* ─── WANTED POSTER STATS ────────────────────────── */
+  .wanted-card {
+    background: var(--gold);
+    background-image: radial-gradient(circle, rgba(160,120,40,0.12) 1px, transparent 1px);
+    background-size: 6px 6px;
+    border: 4px solid var(--ink);
+    box-shadow: 5px 5px 0 0 var(--ink);
+    @apply relative;
+  }
+
+  /* ─── DIVIDERS ───────────────────────────────────── */
+  .ink-rule {
+    @apply h-[4px] bg-[#0d0d0d];
+  }
+  .ink-rule-red {
+    @apply h-[4px] bg-[#dc2626];
+    transform: skewX(-10deg);
+  }
+  .panel-gutter {
+    height: 6px;
+    background: var(--ink);
+  }
+
+  /* ─── LAYOUT UTILITIES ───────────────────────────── */
+  .impact-frame {
+    @apply panel p-4;
+  }
+  .op-panel   { @apply panel; }
+  .screentone { @apply halftone opacity-10; }
+  .speedlines { @apply speed-lines; }
+  .diagonal-split     { clip-path: polygon(0 0, 100% 0, 93% 100%, 0 100%); }
+  .diagonal-split-inv { clip-path: polygon(7% 0, 100% 0, 100% 100%, 0 100%); }
+  .comic-strip-bg     {
+    background-image: repeating-linear-gradient(
+      90deg,
+      transparent 0, transparent 3%,
+      rgba(0,0,0,0.06) 3%, rgba(0,0,0,0.06) 3.5%,
+      transparent 3.5%, transparent 100%
+    );
+  }
+  .wanted-poster { @apply wanted-card; }
 }
 
-::-webkit-scrollbar-track {
-    background: #f1f1f1;
-    border-radius: 4px;
-}
+/* ─── SAFE AREA ─────────────────────────────────────── */
+.bottom-nav-safe { padding-bottom: env(safe-area-inset-bottom, 0px); }
+.main-safe       { padding-bottom: calc(4rem + env(safe-area-inset-bottom, 0px)); }
 
-::-webkit-scrollbar-thumb {
-    background: #888;
-    border-radius: 4px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-    background: #555;
-}
-
-/* Custom animations */
-@keyframes shimmer {
-    0% {
-        background-position: -468px 0;
-    }
-
-    100% {
-        background-position: 468px 0;
-    }
-}
-
-.shimmer {
-    animation: shimmer 1.5s ease-in-out infinite;
-    background: linear-gradient(to right, #f6f7f8 0%, #edeef1 20%, #f6f7f8 40%, #f6f7f8 100%);
-    background-size: 800px 104px;
-}
-
-/* One Piece themed gradients */
-.gradient-pirate {
-    background: linear-gradient(135deg, #dc2626 0%, #f59e0b 100%);
-}
-
-.gradient-ocean {
-    background: linear-gradient(135deg, #1e40af 0%, #0ea5e9 100%);
-}
-
-.gradient-treasure {
-    background: linear-gradient(135deg, #f59e0b 0%, #eab308 100%);
-}
+/* ─── SCROLL BAR ────────────────────────────────────── */
+::-webkit-scrollbar       { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: var(--paper); }
+::-webkit-scrollbar-thumb { background: var(--ink); }

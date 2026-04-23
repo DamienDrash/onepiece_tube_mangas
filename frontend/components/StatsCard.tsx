@@ -1,31 +1,41 @@
+'use client'
+
 import { LucideIcon } from 'lucide-react'
-import clsx from 'clsx'
 
 interface StatsCardProps {
     title: string
-    value: number
+    value: string | number
     icon: LucideIcon
-    gradient: string
     loading?: boolean
 }
 
-export default function StatsCard({ title, value, icon: Icon, gradient, loading }: StatsCardProps) {
+export default function StatsCard({ title, value, icon: Icon, loading }: StatsCardProps) {
     return (
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow duration-200">
-            <div className="flex items-center justify-between">
-                <div>
-                    <p className="text-sm font-medium text-gray-600 mb-1">{title}</p>
-                    {loading ? (
-                        <div className="h-8 w-16 bg-gray-200 rounded animate-pulse"></div>
-                    ) : (
-                        <p className="text-2xl font-bold text-gray-900">
-                            {value.toLocaleString('de-DE')}
-                        </p>
-                    )}
+        <div className="wanted-card flex flex-col items-center justify-center text-center p-4 relative">
+            {/* Corner crop marks */}
+            <div className="absolute top-1.5 left-1.5 w-3 h-3 border-t-[3px] border-l-[3px] border-[#0d0d0d]/30" />
+            <div className="absolute top-1.5 right-1.5 w-3 h-3 border-t-[3px] border-r-[3px] border-[#0d0d0d]/30" />
+            <div className="absolute bottom-1.5 left-1.5 w-3 h-3 border-b-[3px] border-l-[3px] border-[#0d0d0d]/30" />
+            <div className="absolute bottom-1.5 right-1.5 w-3 h-3 border-b-[3px] border-r-[3px] border-[#0d0d0d]/30" />
+
+            <span className="ink-headline text-[9px] text-[#8d6530] tracking-[0.25em] mb-2">
+                MARINES INTEL
+            </span>
+
+            <div className="w-10 h-10 border-[3px] border-[#0d0d0d]/20 bg-[#0d0d0d]/5 flex items-center justify-center mb-2">
+                <Icon className="w-5 h-5 text-[#5d3a1a]" />
+            </div>
+
+            {loading ? (
+                <div className="h-9 w-20 bg-[#0d0d0d]/10 animate-pulse mb-1" />
+            ) : (
+                <div className="ink-headline text-3xl md:text-4xl text-[#2d1a0a] leading-none mb-1">
+                    {value}
                 </div>
-                <div className={clsx('w-12 h-12 rounded-lg flex items-center justify-center', gradient)}>
-                    <Icon className="w-6 h-6 text-white" />
-                </div>
+            )}
+
+            <div className="ink-headline text-[9px] text-[#8d6530] tracking-[0.2em] mt-1">
+                {title}
             </div>
         </div>
     )

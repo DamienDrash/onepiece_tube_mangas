@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <!-- Shadow beneath brim -->
+  <ellipse cx="50" cy="72" rx="44" ry="7" fill="rgba(0,0,0,0.18)"/>
+
+  <!-- Hat brim -->
+  <ellipse cx="50" cy="66" rx="44" ry="9" fill="#c8860a"/>
+  <ellipse cx="50" cy="64" rx="44" ry="9" fill="#f0b82a"/>
+  <ellipse cx="50" cy="63" rx="43" ry="7.5" fill="#f5c830"/>
+
+  <!-- Crown body -->
+  <path d="M18 64 Q20 32 50 28 Q80 32 82 64 Z" fill="#c8860a"/>
+  <path d="M20 64 Q22 33 50 30 Q78 33 80 64 Z" fill="#f5c830"/>
+
+  <!-- Crown highlight -->
+  <ellipse cx="50" cy="32" rx="16" ry="6" fill="#fde068" opacity="0.6"/>
+
+  <!-- Red band -->
+  <path d="M20 62 Q22 55 50 53 Q78 55 80 62 Z" fill="#b91c1c"/>
+  <path d="M20 63 Q22 56 50 54 Q78 56 80 63 Z" fill="#dc2626"/>
+  <path d="M20 65 Q22 58 50 56 Q78 58 80 65 Z" fill="#b91c1c" opacity="0.5"/>
+
+  <!-- Straw texture lines on brim -->
+  <ellipse cx="50" cy="63" rx="36" ry="5.5" fill="none" stroke="#d4990e" stroke-width="1" opacity="0.5"/>
+  <ellipse cx="50" cy="63" rx="28" ry="4" fill="none" stroke="#d4990e" stroke-width="0.8" opacity="0.4"/>
+
+  <!-- Crown rim edge (top of band/bottom of crown) -->
+  <path d="M22 64 Q26 58 50 56 Q74 58 78 64" fill="none" stroke="#92400e" stroke-width="1.2" opacity="0.5"/>
+
+  <!-- Top edge highlight -->
+  <ellipse cx="50" cy="30" rx="18" ry="3.5" fill="#fef08a" opacity="0.35"/>
+</svg>

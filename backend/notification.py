@@ -171,6 +171,7 @@ class ChapterNotifier:
                 recipient=recipient,
                 subject=subject,
                 body=body,
+                use_starttls=self.smtp_config.get("use_starttls", False),
             )
             logger.info("Notification sent for chapter %s to %s", number, recipient)
 

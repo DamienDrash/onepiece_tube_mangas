@@ -1,26 +1,25 @@
-# Core dependencies
+# Core
 fastapi==0.111.0
 uvicorn==0.30.0
 requests==2.31.0
 beautifulsoup4==4.12.3
 EbookLib==0.18
 python-dotenv==1.0.0
-pydantic==2.6.0
+pydantic[email]==2.6.0
 
-# Additional dependencies for CORS and enhanced features
-fastapi-cors==0.0.6
+# Database
+duckdb==1.1.3
 
-# Optional dependencies for scheduling and database persistence
+# Scheduling
 APScheduler==3.10.4
-SQLAlchemy==2.0.30
-
-# Additional libraries used in the example (can be removed if unused)
-email-validator==2.1.1
 
 # Web Push Notifications
 pywebpush==1.14.0
-cryptography==41.0.7
+cryptography==43.0.3
 
-# Additional export formats
-Pillow==10.0.1
+# Export formats
+Pillow==10.4.0
 reportlab==4.0.4
+
+# Email validation (required by pydantic[email])
+email-validator==2.1.1

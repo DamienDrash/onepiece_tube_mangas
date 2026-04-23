@@ -1,162 +1,176 @@
-/**
- * Service Worker for One Piece Offline Push Notifications
- * 
- * This service worker handles:
- * - Push notification events
- * - Notification click events
- * - Background sync (future feature)
- */
+const SW_VERSION = '2.0.0'
+const STATIC_CACHE = `onepiece-static-${SW_VERSION}`
+const DYNAMIC_CACHE = `onepiece-dynamic-${SW_VERSION}`
+const IMAGE_CACHE = `onepiece-images-${SW_VERSION}`
+const ALL_CACHES = [STATIC_CACHE, DYNAMIC_CACHE, IMAGE_CACHE]
 
-// Service Worker version for cache busting
-const SW_VERSION = '1.0.0'
-const CACHE_NAME = `onepiece-offline-${SW_VERSION}`
+const OFFLINE_URL = '/op/offline'
+const BASE = '/op'
 
-// Install event
+const PRECACHE_ASSETS = [
+    '/op/offline',
+    '/op/icon-192x192.png',
+    '/op/icon-512x512.png',
+    '/op/badge-72x72.png',
+    '/op/onepiece-logo.png',
+    '/op/manifest.json',
+]
+
 self.addEventListener('install', (event) => {
-    console.log('[SW] Service Worker installing...', SW_VERSION)
-
-    // Skip waiting to activate immediately
-    self.skipWaiting()
+    event.waitUntil(
+        caches.open(STATIC_CACHE)
+            .then((cache) => cache.addAll(PRECACHE_ASSETS))
+            .then(() => self.skipWaiting())
+    )
 })
 
-// Activate event
 self.addEventListener('activate', (event) => {
-    console.log('[SW] Service Worker activating...', SW_VERSION)
-
     event.waitUntil(
-        // Take control of all pages immediately
-        self.clients.claim()
+        Promise.all([
+            caches.keys().then((keys) =>
+                Promise.all(
+                    keys
+                        .filter((key) => !ALL_CACHES.includes(key))
+                        .map((key) => caches.delete(key))
+                )
+            ),
+            self.clients.claim(),
+        ])
     )
 })
 
-// Push event - handle incoming push notifications
-self.addEventListener('push', (event) => {
-    console.log('[SW] Push message received:', event)
+self.addEventListener('fetch', (event) => {
+    const { request } = event
+    const url = new URL(request.url)
 
-    if (!event.data) {
-        console.warn('[SW] Push event has no data')
+    if (request.method !== 'GET') return
+    if (url.origin !== self.location.origin) return
+
+    // Next.js static assets — content-hashed, cache forever
+    if (url.pathname.includes('/_next/static/')) {
+        event.respondWith(cacheFirst(request, STATIC_CACHE))
         return
     }
 
-    try {
-        const data = event.data.json()
-        console.log('[SW] Push data:', data)
-
-        const options = {
-            body: data.body || data.message || 'Neue Inhalte verfügbar',
-            icon: data.icon || '/icon-192x192.png',
-            badge: data.badge || '/badge-72x72.png',
-            tag: data.tag || 'onepiece-notification',
-            data: data.data || {},
-            requireInteraction: data.requireInteraction || true,
-            actions: [
-                {
-                    action: 'open',
-                    title: 'Öffnen',
-                    icon: '/icon-open.png'
-                },
-                {
-                    action: 'close',
-                    title: 'Schließen',
-                    icon: '/icon-close.png'
-                }
-            ],
-            timestamp: Date.now()
-        }
-
-        event.waitUntil(
-            self.registration.showNotification(data.title || 'One Piece Offline', options)
-        )
-
-    } catch (error) {
-        console.error('[SW] Error parsing push data:', error)
-
-        // Fallback notification
-        event.waitUntil(
-            self.registration.showNotification('One Piece Offline', {
-                body: 'Neue Inhalte verfügbar',
-                icon: '/icon-192x192.png',
-                tag: 'onepiece-fallback'
-            })
-        )
-    }
-})
-
-// Notification click event
-self.addEventListener('notificationclick', (event) => {
-    console.log('[SW] Notification clicked:', event.notification)
-
-    const notification = event.notification
-    const action = event.action
-    const data = notification.data || {}
-
-    notification.close()
-
-    if (action === 'close') {
-        // User explicitly closed, do nothing
+    // API requests — network first, cache fallback
+    if (url.pathname.startsWith('/op/api/') || url.pathname.startsWith('/api/')) {
+        event.respondWith(networkFirst(request, DYNAMIC_CACHE))
         return
     }
 
-    // Determine URL to open
-    let urlToOpen = '/'
-
-    if (action === 'open' || !action) {
-        if (data.url) {
-            urlToOpen = data.url
-        } else if (data.chapter) {
-            urlToOpen = `/?chapter=${data.chapter}`
-        }
+    // Images — cache first
+    if (request.destination === 'image') {
+        event.respondWith(cacheFirst(request, IMAGE_CACHE))
+        return
     }
 
-    event.waitUntil(
-        openOrFocusWindow(urlToOpen)
-    )
+    // Navigation — network first with offline fallback
+    if (request.mode === 'navigate') {
+        event.respondWith(
+            fetch(request).catch(() =>
+                caches.match(OFFLINE_URL).then((r) => r || caches.match(BASE + '/'))
+            )
+        )
+        return
+    }
+
+    // Everything else — stale-while-revalidate
+    event.respondWith(staleWhileRevalidate(request, DYNAMIC_CACHE))
 })
 
-// Helper function to open or focus the app window
-async function openOrFocusWindow(url) {
+async function cacheFirst(request, cacheName) {
+    const cached = await caches.match(request)
+    if (cached) return cached
+    const response = await fetch(request)
+    if (response.ok) {
+        const cache = await caches.open(cacheName)
+        cache.put(request, response.clone())
+    }
+    return response
+}
+
+async function networkFirst(request, cacheName) {
     try {
-        // Get all clients (open windows/tabs)
-        const clients = await self.clients.matchAll({
-            type: 'window',
-            includeUncontrolled: true
+        const response = await fetch(request)
+        if (response.ok) {
+            const cache = await caches.open(cacheName)
+            cache.put(request, response.clone())
+        }
+        return response
+    } catch {
+        const cached = await caches.match(request)
+        return cached || new Response(JSON.stringify({ error: 'offline' }), {
+            status: 503,
+            headers: { 'Content-Type': 'application/json' },
         })
-
-        // Check if app is already open
-        for (const client of clients) {
-            if (client.url.includes(self.location.origin)) {
-                // Focus existing window and navigate to URL
-                await client.focus()
-                if (client.navigate && url !== '/') {
-                    await client.navigate(url)
-                }
-                return client
-            }
-        }
-
-        // Open new window if no existing window found
-        return await self.clients.openWindow(url)
-
-    } catch (error) {
-        console.error('[SW] Error opening/focusing window:', error)
-        // Fallback: just open new window
-        return await self.clients.openWindow('/')
     }
 }
 
-// Message event - handle messages from main app
-self.addEventListener('message', (event) => {
-    console.log('[SW] Message received:', event.data)
+async function staleWhileRevalidate(request, cacheName) {
+    const cache = await caches.open(cacheName)
+    const cached = await cache.match(request)
+    const fetchPromise = fetch(request)
+        .then((response) => {
+            if (response.ok) cache.put(request, response.clone())
+            return response
+        })
+        .catch(() => null)
+    return cached || fetchPromise
+}
 
-    if (event.data && event.data.type === 'SKIP_WAITING') {
-        self.skipWaiting()
+self.addEventListener('push', (event) => {
+    if (!event.data) return
+
+    let data
+    try {
+        data = event.data.json()
+    } catch {
+        data = { title: 'Grand Line Archive', body: 'Neue Inhalte verfügbar' }
     }
+
+    event.waitUntil(
+        self.registration.showNotification(data.title || 'Grand Line Archive', {
+            body: data.body || data.message || 'Neue Inhalte verfügbar',
+            icon: '/op/icon-192x192.png',
+            badge: '/op/badge-72x72.png',
+            tag: data.tag || 'onepiece-notification',
+            data: data.data || {},
+            requireInteraction: false,
+            actions: [
+                { action: 'open', title: 'Öffnen' },
+                { action: 'close', title: 'Schließen' },
+            ],
+            timestamp: Date.now(),
+        })
+    )
 })
 
-// Fetch event - can be used for caching in the future
-self.addEventListener('fetch', (event) => {
-    // For now, just let all requests pass through
-    // Future: implement caching for offline functionality
+self.addEventListener('notificationclick', (event) => {
+    const { notification, action } = event
+    const data = notification.data || {}
+    notification.close()
+
+    if (action === 'close') return
+
+    let url = '/op/'
+    if (data.url) url = data.url
+    else if (data.chapter) url = '/op/downloads'
+
+    event.waitUntil(
+        self.clients
+            .matchAll({ type: 'window', includeUncontrolled: true })
+            .then((clients) => {
+                for (const client of clients) {
+                    if (client.url.startsWith(self.location.origin + '/op') && 'focus' in client) {
+                        client.navigate(url)
+                        return client.focus()
+                    }
+                }
+                return self.clients.openWindow(url)
+            })
+    )
 })
 
-console.log('[SW] Service Worker script loaded:', SW_VERSION)
+self.addEventListener('message', (event) => {
+    if (event.data?.type === 'SKIP_WAITING') self.skipWaiting()
+})
