@@ -54,7 +54,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             <body className={`${inter.className} ${bangers.variable} ${notoJP.variable}`}>
                 <Providers>
                     <Navigation />
-                    <main className="relative container mx-auto px-4 pt-24 pb-28 md:pt-28 md:pb-8 max-w-6xl">
+                    <main className="relative container mx-auto px-4 pb-28 md:pb-8 max-w-6xl"
+                          style={{ paddingTop: 'calc(env(safe-area-inset-top, 0px) + 6rem)' }}>
                         {children}
                     </main>
                     <BottomNav />

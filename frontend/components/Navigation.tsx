@@ -25,7 +25,8 @@ export default function Navigation() {
         : 'bg-green-500'
 
     return (
-        <nav className="fixed top-0 left-0 right-0 z-[100] bg-white border-b-[5px] border-[#0d0d0d]">
+        <nav className="fixed top-0 left-0 right-0 z-[100] bg-white border-b-[5px] border-[#0d0d0d]"
+             style={{ paddingTop: 'env(safe-area-inset-top, 0px)' }}>
             {/* Thin halftone strip at very top */}
             <div className="h-[6px] halftone bg-[#0d0d0d] opacity-100" />
 

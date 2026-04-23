@@ -233,7 +233,10 @@ export default function ReaderPage({ params }: { params: { chapter: string } }) 
                 className="absolute top-0 left-0 right-0 z-10 transition-all duration-300"
                 style={{ transform: uiVisible ? 'translateY(0)' : 'translateY(-100%)' }}
             >
-                <div className="flex items-center gap-3 bg-gradient-to-b from-black/90 to-transparent px-4 pt-3 pb-8">
+                <div
+                    className="flex items-center gap-3 bg-gradient-to-b from-black/90 to-transparent px-4 pb-8"
+                    style={{ paddingTop: 'calc(env(safe-area-inset-top, 0px) + 0.75rem)' }}
+                >
                     <button
                         onClick={(e) => { e.stopPropagation(); router.back() }}
                         className="p-2 hover:bg-white/10 transition-colors flex-shrink-0"
